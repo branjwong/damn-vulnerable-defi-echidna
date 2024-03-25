@@ -8,10 +8,8 @@ report:
 # Local Dev Initialization
 
 ln:
-	# mkdir contracts/test/invariant
-	# ln -sf ../../../review/test/invariant/Handler.t.sol contracts/test/invariant/Handler.t.sol
-	# ln -sf ../../../review/test/invariant/Invariant.t.sol contracts/test/invariant/Invariant.t.sol
-	# ln -sf ../../../review/foundry.toml contracts/foundry.toml
+	ln -sf ../../../exercise5/FlashLoanReceiver.sol repo/contracts/naive-receiver/FlashLoanReceiver.sol
+	ln -sf ../../../exercise5/NaiveReceiverLenderPool.sol repo/contracts/naive-receiver/NaiveReceiverLenderPool.sol
 
 fixperm:
 	sudo chmod -R a+rwX .
