@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 ///      ```
 ///      cd repo
 ///      solc-select use 0.8.0
-///      echidna contracts/naive-receiver/Invariants.sol --contract InvariantTests --config config.yaml
+///      echidna repo --contract InvariantTests --config repo/contracts/naive-receiver/config.yaml
 ///      ```
 contract InvariantTests {
     using Address for address payable;
@@ -29,6 +29,8 @@ contract InvariantTests {
         payable(address(receiver)).sendValue(ETHER_IN_RECEIVER);
     }
 
+    // We want to test whether the balance of the receiver contract can be decreased.
+    // @audit It is bad if the receiver's balance decreases because the caller of NaiveReceiverLenderPool:flashLoan is designed to pay fees, not the receiver.
     function echidna_test_receiver_balance_cannot_decrease()
         public
         view
