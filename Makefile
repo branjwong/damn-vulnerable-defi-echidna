@@ -10,6 +10,8 @@ report:
 ln:
 	ln -sf ../../../exercise5/FlashLoanReceiver.sol repo/contracts/naive-receiver/FlashLoanReceiver.sol
 	ln -sf ../../../exercise5/NaiveReceiverLenderPool.sol repo/contracts/naive-receiver/NaiveReceiverLenderPool.sol
+	ln -sf ../../../exercise5/Invariants.sol repo/contracts/naive-receiver/Invariants.sol
+	ln -sf ../../../exercise5/config.yaml repo/contracts/naive-receiver/config.yaml
 
 fixperm:
 	sudo chmod -R a+rwX .
