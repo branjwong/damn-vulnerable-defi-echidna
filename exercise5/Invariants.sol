@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 ///      ```
 ///      cd repo
 ///      solc-select use 0.8.0
-///      echidna repo --contract InvariantTests --config repo/contracts/naive-receiver/config.yaml
+///      echidna contracts/naive-receiver/Invariants.sol --contract InvariantTests --config contracts/naive-receiver/config.yaml
 ///      ```
 contract InvariantTests {
     using Address for address payable;
