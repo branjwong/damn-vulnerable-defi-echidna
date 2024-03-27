@@ -12,6 +12,10 @@ ln:
 	ln -sf ../../../exercise5/NaiveReceiverLenderPool.sol repo/contracts/naive-receiver/NaiveReceiverLenderPool.sol
 	ln -sf ../../../exercise5/Invariants.sol repo/contracts/naive-receiver/Invariants.sol
 	ln -sf ../../../exercise5/config.yaml repo/contracts/naive-receiver/config.yaml
+	ln -sf ../../../exercise6/ReceiverUnstoppable.sol repo/contracts/unstoppable/ReceiverUnstoppable.sol
+	ln -sf ../../../exercise6/UnstoppableLender.sol repo/contracts/unstoppable/UnstoppableLender.sol
+	ln -sf ../../../exercise6/Invariants.sol repo/contracts/unstoppable/Invariants.sol
+	ln -sf ../../../exercise6/config.yaml repo/contracts/unstoppable/config.yaml
 
 fixperm:
 	sudo chmod -R a+rwX .
