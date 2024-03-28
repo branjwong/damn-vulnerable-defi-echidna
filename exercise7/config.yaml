@@ -1,0 +1,6 @@
+# provide solc remappings to crytic-compile
+cryticArgs: ['--solc-remaps', '@=node_modules/@']
+balanceContract: 10000000000000000000000
+allContracts: true
+sender: ['0x68DDC84B01245762D5DEbBafA880EfE3999129bc']
+# deployer: '0x68DDC84B01245762D5DEbBafA880EfE3999129bc'
