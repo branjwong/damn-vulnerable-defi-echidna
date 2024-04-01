@@ -22,6 +22,11 @@ ln:
 	ln -sf ../../../exercise7/Invariants.sol repo/contracts/side-entrance/Invariants.sol
 	ln -sf ../../../exercise7/config.yaml repo/contracts/side-entrance/config.yaml
 
+	ln -sf ../../../exercise8/TheRewarderPool.sol repo/contracts/the-rewarder/TheRewarderPool.sol
+	ln -sf ../../../exercise8/FlashLoanerPool.sol repo/contracts/the-rewarder/FlashLoanerPool.sol
+	ln -sf ../../../exercise8/Invariants.sol repo/contracts/the-rewarder/Invariants.sol
+	ln -sf ../../../exercise8/config.yaml repo/contracts/the-rewarder/config.yaml
+
 fixperm:
 	sudo chmod -R a+rwX .
 	sudo chmod -R g+rwX .
