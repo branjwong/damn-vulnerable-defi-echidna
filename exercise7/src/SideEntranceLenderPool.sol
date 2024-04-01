@@ -11,6 +11,7 @@ interface IFlashLoanEtherReceiver {
  * @title SideEntranceLenderPool
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
  */
+// @audit does there exist a FlashLoan protocol that loans eth?
 contract SideEntranceLenderPool {
     using Address for address payable;
 
@@ -33,6 +34,7 @@ contract SideEntranceLenderPool {
         IFlashLoanEtherReceiver(msg.sender).execute{value: amount}();
 
         require(
+            // @audit balanceBefore doesn't take into account whether flash loan was paid back to the right user. Should check that sum(balances) is also equal to balanceBefore, or something similar.
             address(this).balance >= balanceBefore,
             "Flash loan hasn't been paid back"
         );
