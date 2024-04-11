@@ -18,10 +18,27 @@
                 "gimenete.github-linker",
                 "tintinweb.solidity-metrics",
                 "JuanBlanco.solidity",
-                "pomdtr.excalidraw-editor"
+                "RomanPeshkov.vscode-text-tables",
+                "tintinweb.vscode-inline-bookmarks"
             ],
             "settings": {
-                "solidity.telemetry": true
+                "solidity.telemetry": true,
+                "inline-bookmarks.view.showVisibleFilesOnly": false,
+                "inline-bookmarks.expert.custom.words.mapping": {
+                    "blue": [
+                        "@audit\\-info[ \\t\\n]"
+                    ],
+                    "purple": [
+                        "@audit\\-issue[ \t\\n]"
+                    ],
+                    "green": [
+                        "@audit\\-ok[ \\t\\n]"
+                    ],
+                    "red": [
+                        "@audit[ \\t\\n]"
+                    ]
+                },
+                "files.insertFinalNewline": true
             }
         }
     }
