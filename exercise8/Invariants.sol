@@ -50,7 +50,7 @@ contract TheRewarderTests {
         token.approve(address(pool), AMOUNT_TO_DEPOSIT);
         pool.deposit(AMOUNT_TO_DEPOSIT);
 
-        pool.withdraw(AMOUNT_TO_DEPOSIT);
+        // pool.withdraw(AMOUNT_TO_DEPOSIT);
 
         return true;
     }
