@@ -22,27 +22,21 @@ contract RewarderTaskDeployer {
     function deployPoolsAndToken()
         public
         payable
-        returns (
-            DamnValuableToken,
-            FlashLoanerPool,
-            TheRewarderPool
-        )
+        returns (DamnValuableToken, FlashLoanerPool, TheRewarderPool)
     {
-        // deploy DamnValuableToken
         DamnValuableToken token;
-        token = new DamnValuableToken();
-        // deploy FlashLoanerPool
         FlashLoanerPool pool;
-        pool = new FlashLoanerPool(address(token));
-        // add liquidity to FlashLoanerPool deployed
-        token.transfer(address(pool), TOKENS_IN_LENDER_POOL);
-        // deploy TheRewarderPool
         TheRewarderPool rewarder;
+
+        token = new DamnValuableToken();
+        pool = new FlashLoanerPool(address(token));
         rewarder = new TheRewarderPool(address(token));
+
+        token.transfer(address(pool), TOKENS_IN_LENDER_POOL);
+
         // deposit tokens to the rewarder pool (simulate a deposit of 4 users)
         token.approve(address(rewarder), TOKENS_PER_USER * 4);
         rewarder.deposit(TOKENS_PER_USER * 4);
-        // return
         return (token, pool, rewarder);
     }
 }
@@ -57,12 +51,12 @@ contract TheRewarderTests {
     uint256 reward;
 
     uint256 flashLoanAmount;
-    
+
     bool private depositEnabled;
     bool private withdrawalEnabled;
     bool private rewardsDistributionEnabled;
 
-    constructor() payable {
+    constructor() {
         RewarderTaskDeployer deployer = new RewarderTaskDeployer();
         (liquidityToken, pool, rewarder) = deployer.deployPoolsAndToken();
         rewardToken = rewarder.rewardToken();
