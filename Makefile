@@ -27,6 +27,10 @@ ln:
 	ln -sf ../../../dvd5.ech8/src/contracts/Invariants.sol repo/contracts/the-rewarder/Invariants.sol
 	ln -sf ../../../dvd5.ech8/config.yaml repo/contracts/the-rewarder/config.yaml
 
+	ln -sf ../../../dvd3/src/TrusterLenderPool.sol repo/contracts/truster/TrusterLenderPool.sol
+	ln -sf ../../../dvd3/src/Invariants.sol repo/contracts/truster/Invariants.sol
+	ln -sf ../../../dvd3/src/config.yaml repo/contracts/truster/config.yaml
+
 fixperm:
 	sudo chmod -R a+rwX .
 	sudo chmod -R g+rwX .
@@ -38,7 +42,7 @@ git_url := https://github.com/tinchoabbate/damn-vulnerable-defi.git
 
 init:
 	git init
-	if [ ! -d "repo" ]; then \
-		git submodule add $(git_url) repo; \
-	fi
+	git submodule add $(git_url) repo
+
+submodule-update:
 	git submodule update --init
