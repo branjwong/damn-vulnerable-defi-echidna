@@ -31,7 +31,9 @@ contract TheRewarderTests {
         deployer.transfer(address(pool), AMOUNT_TO_DEPOSIT);
     }
 
-    function echidna_rewarder_pool_has_funds() public view returns (bool) {
+    function echidna_wins_a_fair_amount() public view returns (bool) {
+        // ...
+
         return token.balanceOf(address(pool)) > AMOUNT_TO_DEPOSIT - 1;
     }
 }

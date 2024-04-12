@@ -23,7 +23,7 @@ contract TheRewarderPool {
     // Token deposited into the pool by users
     DamnValuableToken public immutable liquidityToken;
 
-    // @audit-q Is this used for anything other than accounting?
+    // @audit-info Is this used for anything other than accounting?
     // Token used for internal accounting and snapshots
     // Pegged 1:1 with the liquidity token
     AccountingToken public accToken;
