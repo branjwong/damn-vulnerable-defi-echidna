@@ -39,7 +39,7 @@ contract TheRewarderPool {
         liquidityToken = DamnValuableToken(tokenAddress);
         accToken = new AccountingToken();
 
-        // @audit-note: don't get paid in same token you deposit
+        // @audit-info don't get paid in same token you deposit
         rewardToken = new RewardToken();
 
         _recordSnapshot();
@@ -51,7 +51,7 @@ contract TheRewarderPool {
     function deposit(uint256 amountToDeposit) external {
         require(amountToDeposit > 0, "Must deposit tokens");
 
-        // @audit-tl: accounts how many tokens put in by who
+        // @audit-info accounts how many tokens put in by who
         accToken.mint(msg.sender, amountToDeposit);
         distributeRewards();
 
