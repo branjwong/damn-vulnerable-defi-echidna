@@ -38,7 +38,7 @@ git_url := https://github.com/tinchoabbate/damn-vulnerable-defi.git
 
 init:
 	git init
-	if [ ! -d "repo" ]; then \
-		git submodule add $(git_url) repo; \
-	fi
+	git submodule add $(git_url) repo
+
+submodule-update:
 	git submodule update --init
