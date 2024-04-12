@@ -62,7 +62,7 @@ contract TheRewarderPoolExploits is Test {
 
             vm.startPrank(player);
             rewarderPool.distributeRewards();
-            // rewarderPool.withdraw(AMOUNT_TO_DEPOSIT);
+            rewarderPool.withdraw(AMOUNT_TO_DEPOSIT);
 
             assertEq(rewardToken.balanceOf(player), AMOUNT_TO_DEPOSIT * 10 ** 18);
         }
