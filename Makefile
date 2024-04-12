@@ -34,7 +34,7 @@ fixperm:
 
 # Project Initialization
 
-git_url := https://github.com/crytic/damn-vulnerable-defi-echidna.git
+git_url := https://github.com/tinchoabbate/damn-vulnerable-defi.git
 
 init:
 	git init
