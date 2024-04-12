@@ -11,3 +11,12 @@ make ln
 cd repo
 npm install
 ```
+
+# Echidna Exercise to DVD Mapping
+
+| Echidna | Damn Vulnerable # | Name           |
+| ------- | ----------------- | -------------- |
+| 5       | 2                 | Naive receiver |
+| 6       | 1                 | Unstoppable    |
+| 7       | 4                 | Side Entrance  |
+| 8       | 5                 | The Rewarder   |
