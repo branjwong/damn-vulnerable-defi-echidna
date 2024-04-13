@@ -16,3 +16,6 @@
 [submodule "repo"]
 	path = repo
 	url = https://github.com/tinchoabbate/damn-vulnerable-defi.git
+[submodule "dvd3/lib/openzeppelin-contracts"]
+	path = dvd3/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
