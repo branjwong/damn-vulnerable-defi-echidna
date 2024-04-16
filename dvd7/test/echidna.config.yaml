@@ -1,0 +1,10 @@
+cryticArgs: ['--solc-remaps', '@=node_modules/@']
+corpusDir: "test/corpus"
+
+deployer: '0x10000'
+sender: ['0x30000'] # to have a different sender of TXs then deployer
+
+balanceContract: 1000000000000
+
+allContracts: true
+testLimit: 100000
