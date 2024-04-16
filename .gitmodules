@@ -25,3 +25,9 @@
 [submodule "dvd6/lib/openzeppelin-contracts"]
 	path = dvd6/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "dvd7/lib/forge-std"]
+	path = dvd7/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "dvd7/lib/openzeppelin-contracts"]
+	path = dvd7/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
