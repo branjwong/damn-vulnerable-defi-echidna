@@ -27,21 +27,28 @@ contract InvariantTests {
     }
 
     // write attack function
-    function flashLoan(uint256 amount) external {
+    function flashLoan(
+        uint256 borrowerAmount,
+        address borrower,
+        address target,
+        address approveTarget,
+        uint256 approveAmount
+    ) external {
         lenderPool.flashLoan(
-            0,
-            address(this),
-            address(valuableToken),
+            borrowerAmount,
+            borrower,
+            target,
+            // @audit-info hard to abstract this away from the fuzzer
             abi.encodeWithSignature(
                 "approve(address,uint256)", //@audit-info no spaces between args
-                address(this),
-                amount
+                approveTarget,
+                approveAmount
             )
         );
     }
 
-    function transferFrom(uint256 amount) external {
-        valuableToken.transferFrom(address(lenderPool), msg.sender, amount);
+    function transferFrom(address from, address to, uint256 amount) external {
+        valuableToken.transferFrom(from, to, amount);
     }
 
     function echidna_lender_balance_cannot_decrease()
