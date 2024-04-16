@@ -1,14 +1,14 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Address.sol";
-import "./TrusterLenderPool.sol";
-import "./DamnValuableToken.sol";
+import "../src/TrusterLenderPool.sol";
+import "../src/DamnValuableToken.sol";
 
 /// @dev Run the template with
 ///      ```
 ///      cd repo
 ///      solc-select use 0.8.0
-///      echidna src/Invariants.sol --contract InvariantTests --config src/config.yaml
+///      echidna test/Invariants.sol --contract InvariantTests --config test/config.yaml
 ///      ```
 contract InvariantTests {
     using Address for address payable;
