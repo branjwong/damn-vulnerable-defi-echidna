@@ -26,7 +26,10 @@ contract InvariantTests {
         (valuableToken, lenderPool) = deployer.deploy(FLASH_LOAN_POOL_AMOUNT);
     }
 
-    // write attack function
+    // //////////////
+    // EDUCATED GUESS
+    // //////////////
+
     function flashLoan(
         uint256 borrowerAmount,
         address borrower,
@@ -47,8 +50,20 @@ contract InvariantTests {
         );
     }
 
+    // /////////////////
+    // SUSPECT FUNCTIONS
+    // /////////////////
+
     function transferFrom(address from, address to, uint256 amount) external {
         valuableToken.transferFrom(from, to, amount);
+    }
+
+    function approve(address spender, uint256 amount) external {
+        valuableToken.approve(spender, amount);
+    }
+
+    function transfer(address to, uint256 amount) external {
+        valuableToken.transfer(to, amount);
     }
 
     function echidna_lender_balance_cannot_decrease()
