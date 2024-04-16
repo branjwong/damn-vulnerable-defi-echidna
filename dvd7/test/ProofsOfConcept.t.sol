@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "../src/DamnValuableNFT.sol";
 import "../src/Exchange.sol";
 import "../src/TrustfulOracle.sol";
-import "../src/TrustfulOracleInitializer.sol";
+import "./Deployer.sol";
 
 contract ProofsOfConcept is Test {
     address _attacker = makeAddr("attacker");
@@ -21,7 +21,9 @@ contract ProofsOfConcept is Test {
 
     constructor() {
         _deployer = new Deployer();
-        (_exchange, _nft, _oracle) = _deployer.deploy();
+        (_exchange, _nft, _oracle) = _deployer.deploy{
+            value: _deployer.EXCHANGE_INITIAL_ETH_BALANCE()
+        }();
     }
 
     function testHappyPath() external {
@@ -40,37 +42,6 @@ contract ProofsOfConcept is Test {
         // attack.attack(tokensInPool);
         // assertEq(_token.balanceOf(_attacker), tokensInPool);
         // assertEq(_token.balanceOf(address(_pool)), 0);
-    }
-}
-
-contract Deployer {
-    uint256 public immutable EXCHANGE_INITAL_ETH_BALANCE = 9990 ether;
-    uint256 public immutable INITIAL_NFT_PRICE = 999 ether;
-    string public NFT_SYMBOL = "DVNFT";
-
-    address[] _sources = [
-        0xA73209FB1a42495120166736362A1DfA9F95A105,
-        0xe92401A4d3af5E446d93D11EEc806b1462b39D15,
-        0x81A5D6E50C214044bE44cA0CB057fe119097850c
-    ];
-    string[] _symbols;
-    uint256[] _prices;
-
-    function deploy()
-        external
-        returns (Exchange exchange, DamnValuableNFT nft, TrustfulOracle oracle)
-    {
-        _symbols = [NFT_SYMBOL, NFT_SYMBOL, NFT_SYMBOL];
-        _prices = [INITIAL_NFT_PRICE, INITIAL_NFT_PRICE, INITIAL_NFT_PRICE];
-
-        TrustfulOracleInitializer initializer = new TrustfulOracleInitializer(
-            _sources,
-            _symbols,
-            _prices
-        );
-        oracle = initializer.oracle();
-        exchange = new Exchange(address(oracle));
-        nft = exchange.token();
     }
 }
 
