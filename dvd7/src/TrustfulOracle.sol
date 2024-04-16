@@ -11,12 +11,14 @@ import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
  *         The oracle's price for a given symbol is the median price of the symbol over all sources.
  */
 contract TrustfulOracle is AccessControlEnumerable {
-
-    bytes32 public constant TRUSTED_SOURCE_ROLE = keccak256("TRUSTED_SOURCE_ROLE");
+    bytes32 public constant TRUSTED_SOURCE_ROLE =
+        keccak256("TRUSTED_SOURCE_ROLE");
     bytes32 public constant INITIALIZER_ROLE = keccak256("INITIALIZER_ROLE");
 
     // Source address => (symbol => price)
-    mapping(address => mapping (string => uint256)) private pricesBySource;
+    // @audit-info a source had many symbols and each symbol has a price
+    // @audit what is a symbol? an NFT type?
+    mapping(address => mapping(string => uint256)) private pricesBySource;
 
     modifier onlyTrustedSource() {
         require(hasRole(TRUSTED_SOURCE_ROLE, msg.sender));
@@ -35,9 +37,11 @@ contract TrustfulOracle is AccessControlEnumerable {
         uint256 newPrice
     );
 
+    // @audit trusted sources initialized at construction, no more can be added after
+    // @audit intialization not necessarily needed? why?
     constructor(address[] memory sources, bool enableInitialization) {
         require(sources.length > 0);
-        for(uint256 i = 0; i < sources.length; i++) {
+        for (uint256 i = 0; i < sources.length; i++) {
             _setupRole(TRUSTED_SOURCE_ROLE, sources[i]);
         }
 
@@ -46,35 +50,45 @@ contract TrustfulOracle is AccessControlEnumerable {
         }
     }
 
+    // @audit-info if not initialized, prices get set up with postPrice
     // A handy utility allowing the deployer to setup initial prices (only once)
     function setupInitialPrices(
         address[] memory sources,
         string[] memory symbols,
         uint256[] memory prices
-    ) 
-        public
-        onlyInitializer
-    {
+    ) public onlyInitializer {
         // Only allow one (symbol, price) per source
-        require(sources.length == symbols.length && symbols.length == prices.length);
-        for(uint256 i = 0; i < sources.length; i++) {
+        require(
+            sources.length == symbols.length && symbols.length == prices.length
+        );
+        for (uint256 i = 0; i < sources.length; i++) {
             _setPrice(sources[i], symbols[i], prices[i]);
         }
         renounceRole(INITIALIZER_ROLE, msg.sender);
     }
 
-    function postPrice(string calldata symbol, uint256 newPrice) external onlyTrustedSource {
+    // @audit-info only trusted sources post their own prices
+    function postPrice(
+        string calldata symbol,
+        uint256 newPrice
+    ) external onlyTrustedSource {
         _setPrice(msg.sender, symbol, newPrice);
     }
 
-    function getMedianPrice(string calldata symbol) external view returns (uint256) {
+    function getMedianPrice(
+        string calldata symbol
+    ) external view returns (uint256) {
         return _computeMedianPrice(symbol);
     }
 
-    function getAllPricesForSymbol(string memory symbol) public view returns (uint256[] memory) {
+    function getAllPricesForSymbol(
+        string memory symbol
+    ) public view returns (uint256[] memory) {
         uint256 numberOfSources = getNumberOfSources();
         uint256[] memory prices = new uint256[](numberOfSources);
 
+        // @audit-info cannot iterate through pricesBySource, since its a mapping
+        // @audit-info AccessControlEmerable maintains a list of sources
         for (uint256 i = 0; i < numberOfSources; i++) {
             address source = getRoleMember(TRUSTED_SOURCE_ROLE, i);
             prices[i] = getPriceBySource(symbol, source);
@@ -83,7 +97,10 @@ contract TrustfulOracle is AccessControlEnumerable {
         return prices;
     }
 
-    function getPriceBySource(string memory symbol, address source) public view returns (uint256) {
+    function getPriceBySource(
+        string memory symbol,
+        address source
+    ) public view returns (uint256) {
         return pricesBySource[source][symbol];
     }
 
@@ -91,13 +108,19 @@ contract TrustfulOracle is AccessControlEnumerable {
         return getRoleMemberCount(TRUSTED_SOURCE_ROLE);
     }
 
-    function _setPrice(address source, string memory symbol, uint256 newPrice) private {
+    function _setPrice(
+        address source,
+        string memory symbol,
+        uint256 newPrice
+    ) private {
         uint256 oldPrice = pricesBySource[source][symbol];
         pricesBySource[source][symbol] = newPrice;
         emit UpdatedPrice(source, symbol, oldPrice, newPrice);
     }
 
-    function _computeMedianPrice(string memory symbol) private view returns (uint256) {
+    function _computeMedianPrice(
+        string memory symbol
+    ) private view returns (uint256) {
         uint256[] memory prices = _sort(getAllPricesForSymbol(symbol));
 
         // calculate median price
@@ -110,7 +133,9 @@ contract TrustfulOracle is AccessControlEnumerable {
         }
     }
 
-    function _sort(uint256[] memory arrayOfNumbers) private pure returns (uint256[] memory) {
+    function _sort(
+        uint256[] memory arrayOfNumbers
+    ) private pure returns (uint256[] memory) {
         for (uint256 i = 0; i < arrayOfNumbers.length; i++) {
             for (uint256 j = i + 1; j < arrayOfNumbers.length; j++) {
                 if (arrayOfNumbers[i] > arrayOfNumbers[j]) {
@@ -119,7 +144,7 @@ contract TrustfulOracle is AccessControlEnumerable {
                     arrayOfNumbers[j] = tmp;
                 }
             }
-        }        
+        }
         return arrayOfNumbers;
     }
 }

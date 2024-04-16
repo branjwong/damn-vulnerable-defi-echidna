@@ -26,10 +26,12 @@ contract Exchange is ReentrancyGuard {
     }
 
     function buyOne() external payable nonReentrant returns (uint256) {
+        // @audit-info buy using ETH
         uint256 amountPaidInWei = msg.value;
         require(amountPaidInWei > 0, "Amount paid must be greater than zero");
 
         // Price should be in [wei / NFT]
+        // @audit-info oracle tells price
         uint256 currentPriceInWei = oracle.getMedianPrice(token.symbol());
         require(
             amountPaidInWei >= currentPriceInWei,
@@ -38,6 +40,7 @@ contract Exchange is ReentrancyGuard {
 
         uint256 tokenId = token.safeMint(msg.sender);
 
+        // @audit-info refund excess
         payable(msg.sender).sendValue(amountPaidInWei - currentPriceInWei);
 
         emit TokenBought(msg.sender, tokenId, currentPriceInWei);
@@ -45,6 +48,7 @@ contract Exchange is ReentrancyGuard {
         return tokenId;
     }
 
+    // @audit-info sold back to contract and burnt
     function sellOne(uint256 tokenId) external nonReentrant {
         require(
             msg.sender == token.ownerOf(tokenId),
@@ -56,6 +60,8 @@ contract Exchange is ReentrancyGuard {
         );
 
         // Price should be in [wei / NFT]
+        // @audit how might there be not enough ETH to buy back the NFT?
+        // @audit how might oracle price be manipulated?
         uint256 currentPriceInWei = oracle.getMedianPrice(token.symbol());
         require(
             address(this).balance >= currentPriceInWei,
