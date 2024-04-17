@@ -1,2 +1,3 @@
 crytic-export/
-corpus
+corpus/
+node_modules/
