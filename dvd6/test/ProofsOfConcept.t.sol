@@ -5,8 +5,8 @@ pragma solidity ^0.8.0;
 import {Test, console} from "forge-std/Test.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@common/DamnValuableTokenSnapshot.sol";
 
-import "../src/DamnValuableTokenSnapshot.sol";
 import "../src/SimpleGovernance.sol";
 import "../src/SelfiePool.sol";
 

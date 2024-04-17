@@ -1,8 +1,8 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@common/DamnValuableNFT.sol";
 
-import "../src/DamnValuableNFT.sol";
 import "../src/Exchange.sol";
 import "../src/TrustfulOracle.sol";
 import "../src/TrustfulOracleInitializer.sol";

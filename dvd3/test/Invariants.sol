@@ -1,8 +1,8 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@common/DamnValuableToken.sol";
 import "../src/TrusterLenderPool.sol";
-import "../src/DamnValuableToken.sol";
 
 /// @dev Run the template with
 ///      ```

@@ -34,3 +34,6 @@
 [submodule "dvd8/lib/forge-std"]
 	path = dvd8/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "dvd8/lib/openzeppelin-contracts"]
+	path = dvd8/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts

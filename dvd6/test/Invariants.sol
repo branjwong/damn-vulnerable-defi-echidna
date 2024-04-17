@@ -2,7 +2,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "../src/DamnValuableTokenSnapshot.sol";
+import "@common/DamnValuableTokenSnapshot.sol";
+
 import "../src/SimpleGovernance.sol";
 import "../src/SelfiePool.sol";
 

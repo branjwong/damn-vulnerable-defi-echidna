@@ -1,3 +1,5 @@
 crytic-export/
 corpus/
 node_modules/
+dvd*/common/
+dvd*/remappings.txt

@@ -2,8 +2,9 @@
 
 pragma solidity ^0.8.0;
 
+import "@common/DamnValuableToken.sol";
+
 import "./RewardToken.sol";
-import "../DamnValuableToken.sol";
 import "./AccountingToken.sol";
 
 /**
