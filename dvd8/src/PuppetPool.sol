@@ -43,6 +43,7 @@ contract PuppetPool is ReentrancyGuard {
 
         if (msg.value < depositRequired) revert NotEnoughCollateral();
 
+        // @audit-info refund leftover ETH
         if (msg.value > depositRequired) {
             unchecked {
                 payable(msg.sender).sendValue(msg.value - depositRequired);
