@@ -11,7 +11,7 @@ import "../src/PuppetPool.sol";
 contract Deployer {
     using Address for address payable;
 
-    uint256 public constant POOL_TOKENS = 100_000;
+    uint256 public constant POOL_INITIAL_TOKEN_BALANCE = 100_000 ether;
     uint256 public constant UNISWAP_INITIAL_TOKEN_RESERVE = 10 ether;
     uint256 public constant UNISWAP_INITIAL_ETH_RESERVE = 10 ether;
 
@@ -44,7 +44,7 @@ contract Deployer {
 
         // Deploy the lending pool
         pool = new PuppetPool(address(token), address(exchange));
-        token.transfer(address(pool), POOL_TOKENS);
+        token.transfer(address(pool), POOL_INITIAL_TOKEN_BALANCE);
 
         // Add initial token and ETH liquidity to the pool
         // There’s a DVT market opened in an old Uniswap v1 exchange, currently with 10 ETH and 10 DVT in liquidity.

