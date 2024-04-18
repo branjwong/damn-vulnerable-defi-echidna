@@ -30,6 +30,7 @@ ln:
 
 	ln -sf ../../../common/uniswap/UniswapDeployer.sol dvd8/common/uniswap/UniswapDeployer.sol
 	ln -sf ../../../common/uniswap/UniswapV1Exchange.sol dvd8/common/uniswap/UniswapV1Exchange.sol
+	ln -sf ../../../common/uniswap/UniswapV1Factory.sol dvd8/common/uniswap/UniswapV1Factory.sol
 
 fixperm:
 	sudo chmod -R a+rwX .
