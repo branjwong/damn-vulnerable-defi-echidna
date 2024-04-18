@@ -12,6 +12,7 @@ import "../src/PuppetPool.sol";
 import "./Deployer.sol";
 
 contract ProofsOfConcept is Test {
+    address _user = makeAddr("user");
     address _attacker = makeAddr("attacker");
 
     Deployer _deployer;
@@ -31,10 +32,21 @@ contract ProofsOfConcept is Test {
             calculateTokenToEthInputPrice(1 ether, 10 ether, 10 ether)
         );
 
-        LoanUser loanUser = new LoanUser();
-        vm.deal(address(loanUser), 1000 ether);
+        vm.deal(_user, 1000 ether);
 
-        loanUser.act();
+        console.log("LoanUser token balance: %d", _token.balanceOf(_user));
+        console.log("LoanUser eth balance: %d", _user.balance);
+        console.log("Pool token balance: %d", _token.balanceOf(address(_pool)));
+        console.log("Pool eth balance: %d", address(_pool).balance);
+
+        uint256 tokensToBorrow = 90_000;
+        vm.prank(_user);
+        _pool.borrow{value: tokensToBorrow * 2}(tokensToBorrow, _user);
+
+        console.log("LoanUser token balance: %d", _token.balanceOf(_user));
+        console.log("LoanUser eth balance: %d", _user.balance);
+        console.log("Pool token balance: %d", _token.balanceOf(address(_pool)));
+        console.log("Pool eth balance: %d", address(_pool).balance);
     }
 
     function testAttack() external {
@@ -67,12 +79,6 @@ contract ProofsOfConcept is Test {
     }
 }
 
-contract LoanUser {
-    function act() external {}
-
-    receive() external payable {}
-}
-
 contract Attack {
     PuppetPool _pool;
 
@@ -80,5 +86,8 @@ contract Attack {
         _pool = pool;
     }
 
-    function attack(uint256 amount) external {}
+    function attack(uint256 amount) external {
+        // deposit all tokens in uniswap, get eth
+        // borrow all tokens from the pool
+    }
 }

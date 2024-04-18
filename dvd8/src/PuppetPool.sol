@@ -66,6 +66,8 @@ contract PuppetPool is ReentrancyGuard {
         return (amount * _computeOraclePrice() * DEPOSIT_FACTOR) / 10 ** 18;
     }
 
+    // @audit how can we manipulate the price in uniswap to drive the oracle price down?
+    // @audit-info if there are more tokens, less eth, the price of a token wil be lower and oracle price will be lower.
     function _computeOraclePrice() private view returns (uint256) {
         // calculates the price of the token in wei according to Uniswap pair
         return
