@@ -55,7 +55,15 @@ contract Deployer is Test {
             UNISWAP_INITIAL_TOKEN_RESERVE,
             block.timestamp + 2 days // deadline
         );
+    }
 
+    function logState(
+        PuppetPool pool,
+        DamnValuableToken token,
+        UniswapV1Exchange exchange,
+        UniswapV1Factory factory,
+        UniswapV1Exchange exchangeTemplate
+    ) internal {
         console.log("Deployer: deployed PuppetPool at %s", address(pool));
         console.log(
             "Deployer: deployed DamnValuableToken at %s",
