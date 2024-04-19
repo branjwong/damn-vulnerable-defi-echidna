@@ -4,10 +4,10 @@
 
 corpusDir: "corpus"
 
-# deployer: '0x10000'
-# sender: ['0x30000'] # to have a different sender of TXs then deployer
+deployer: '0x10000'
+sender: ['0x30000'] # to have a different sender of TXs then deployer
 
-balanceContract: 10000000000000000000
+balanceContract: 35000000000000000000
 
 testLimit: 100000
 # solcLibs: ["../common"]

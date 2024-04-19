@@ -27,8 +27,8 @@ contract Deployer {
         )
     {
         require(
-            msg.value >= UNISWAP_INITIAL_ETH_RESERVE,
-            "Deployer: insufficient ETH"
+            msg.value == UNISWAP_INITIAL_ETH_RESERVE,
+            "Deployer: incorrect ETH"
         );
 
         UniswapDeployer deployer = new UniswapDeployer();
