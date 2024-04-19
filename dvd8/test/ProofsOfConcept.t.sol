@@ -27,6 +27,13 @@ contract ProofsOfConcept is Test {
     constructor() {
         _deployer = new Deployer();
         (_token, _pool, _exchange) = _deployer.deploy{value: 10 ether}();
+
+        console.log("Deployer address: %s", address(_deployer));
+        console.log("Token address: %s", address(_token));
+        console.log("Pool address: %s", address(_pool));
+        console.log("Exchange address: %s", address(_exchange));
+        console.log("This address: %s", address(this));
+        console.log("constructor.msg.sender: %s", address(msg.sender));
     }
 
     function testHappyPath() external {
@@ -53,6 +60,8 @@ contract ProofsOfConcept is Test {
     }
 
     function testAttack() external {
+        console.log("testAttack().msg.sender: %s", address(msg.sender));
+
         // Pass the challenge by taking all tokens from the lending pool. You start with 25 ETH and 1000 DVTs in balance.
         vm.deal(_attacker, ATTACKER_ETH);
         deal(address(_token), _attacker, ATTACKER_TOKENS);
