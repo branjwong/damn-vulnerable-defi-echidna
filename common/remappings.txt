@@ -1,2 +1,2 @@
 @openzeppelin=lib/openzeppelin-contracts
-@common=common/
+@common=common

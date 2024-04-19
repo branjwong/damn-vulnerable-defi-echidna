@@ -1,7 +1,7 @@
 pragma solidity ^0.8.0;
 
-import "./UniswapV1Exchange.sol";
-import "./UniswapV1Factory.sol";
+import "@common/uniswap/UniswapV1Exchange.sol";
+import "@common/uniswap/UniswapV1Factory.sol";
 
 contract UniswapDeployer {
     // Create contract from bytecode
