@@ -1,7 +1,8 @@
-pragma solidity ^0.8.0;
+pragma solidity 0.5.16;
 
-import "@uniswap/v2-periphery/contracts/libraries/UniswapV2Library.sol";
-import "../src/PuppetV2Pool.sol";
+import {UniswapV2Factory} from "@uniswap/v2-core/contracts/UniswapV2Factory.sol";
+import {UniswapV2Library} from "@uniswap/v2-periphery/contracts/libraries/UniswapV2Library.sol";
+import {PuppetV2Pool} from "../src/PuppetV2Pool.sol";
 
 contract Deployer {
     using Address for address payable;
@@ -11,21 +12,21 @@ contract Deployer {
     IERC20 private _token;
     IERC20 private _weth;
 
-    function deploy()
+    function deploy(
+        uint256 uniswapInitialTokenReserve,
+        uint256 uniswapInitialWethReserve,
+        uint256 poolInitialTokenBalance
+    )
         external
         payable
         returns (
             DamnValuableToken token,
-            PuppetPool pool,
-            UniswapV1Exchange exchange
+            Weth weth,
+            address uniswapFactory,
+            address uniswapRouter
         )
     {
-        require(
-            msg.value == UNISWAP_INITIAL_ETH_RESERVE,
-            "Deployer: incorrect ETH"
-        );
-
-        UniswapDeployer deployer = new UniswapDeployer();
+        UniswapFactory uniswapFactory = new UniswapFactory();
 
         // Deploy token to be traded in Uniswap
         token = new DamnValuableToken();
