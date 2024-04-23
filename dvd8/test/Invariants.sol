@@ -23,7 +23,7 @@ contract Echidna {
         UnsolvedAddresses,
         // < 600000 calls : 5 min
         UnsolvedTokenValues,
-        // < 900000 iterations: 10 min (couldn't find in 10min)
+        // < 900000 iterations: 10 min
         UnorderedFunctions,
         // > 10000000 iterations: can't find solution
         NoHarness

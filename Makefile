@@ -25,6 +25,7 @@ libs:
 	ln -sf ../common/remappings.txt dvd6/remappings.txt
 	ln -sf ../common/remappings.txt dvd7/remappings.txt
 	ln -sf ../common/remappings.txt dvd8/remappings.txt
+	ln -sf ../common/remappings.txt dvd9/remappings.txt
 fixperm:
 	sudo chmod -R a+rwX .
 	sudo chmod -R g+rwX .
