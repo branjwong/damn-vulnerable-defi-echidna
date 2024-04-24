@@ -25,24 +25,21 @@ contract ProofsOfConcept is Test {
     uint256 public constant POOL_INITIAL_TOKEN_BALANCE = 1000000 ether;
 
     Deployer _deployer;
-    DamnValuableToken _pool;
-    Weth _weth;
+    DamnValuableToken _token;
+    WETH _weth;
     PuppetV2Pool _pool;
 
     constructor() public {
         _deployer = new Deployer();
-        (_token, _weth, _token) = _deployer.deploy(
+        (_token, _weth, _pool) = _deployer.deploy{
+            value: UNISWAP_INITIAL_WETH_RESERVE
+        }(
             UNISWAP_INITIAL_TOKEN_RESERVE,
             UNISWAP_INITIAL_WETH_RESERVE,
             POOL_INITIAL_TOKEN_BALANCE
         );
 
         vm.deal(_user, PLAYER_INITIAL_ETH_BALANCE);
-
-        assertEq(
-            _exchange.getTokenToEthInputPrice(1 ether),
-            _calculateTokenToEthInputPrice(1 ether, 10 ether, 10 ether)
-        );
     }
 
     function testHappyPath() external {}

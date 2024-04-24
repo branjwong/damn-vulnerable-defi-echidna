@@ -1,3 +1,5 @@
+pragma solidity ^0.8.0;
+
 interface IUniswapV2Factory {
     function allPairs(uint256) external view returns (address);
     function allPairsLength() external view returns (uint256);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
 import "@common/uniswap/v2/UniswapV2Library.sol";
 import "@common/uniswap/v2/SafeMath.sol";
