@@ -8,17 +8,12 @@ report:
 # Local Dev Initialization
 
 libs:
-	rm -r dvd3/common
-	rm -r dvd5.ech8/common
-	rm -r dvd6/common
-	rm -r dvd7/common
-	rm -r dvd8/common
-
 	cp -r common dvd3
 	cp -r common dvd5.ech8
 	cp -r common dvd6
 	cp -r common dvd7
 	cp -r common dvd8
+	cp -r common dvd9
 
 	ln -sf ../common/remappings.txt dvd3/remappings.txt
 	ln -sf ../common/remappings.txt dvd5.ech8/remappings.txt

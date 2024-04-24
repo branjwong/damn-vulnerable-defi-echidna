@@ -1,16 +1,13 @@
 pragma solidity 0.5.16;
 
 import {UniswapV2Factory} from "@uniswap/v2-core/contracts/UniswapV2Factory.sol";
-import {UniswapV2Library} from "@uniswap/v2-periphery/contracts/libraries/UniswapV2Library.sol";
+import {UniswapV2Router02} from "@uniswap/v2-periphery/contracts/UniswapV2Router02.sol";
+import {WETH} from "solmate/tokens/WETH.sol";
+import {DamnValuableToken} from "@common/DamnValuableToken.sol";
 import {PuppetV2Pool} from "../src/PuppetV2Pool.sol";
 
 contract Deployer {
     using Address for address payable;
-
-    address private _uniswapPair;
-    address private _uniswapFactory;
-    IERC20 private _token;
-    IERC20 private _weth;
 
     function deploy(
         uint256 uniswapInitialTokenReserve,
@@ -19,41 +16,40 @@ contract Deployer {
     )
         external
         payable
-        returns (
-            DamnValuableToken token,
-            Weth weth,
-            address uniswapFactory,
-            address uniswapRouter
-        )
+        returns (DamnValuableToken token, Weth weth, PuppetV2Pool pool)
     {
-        UniswapFactory uniswapFactory = new UniswapFactory();
+        // Deploy tokens to be traded
+        DamnVulnerableToken token = new DamnValuableToken();
+        Weth weth = new WETH();
 
-        // Deploy token to be traded in Uniswap
-        token = new DamnValuableToken();
-        _token = token;
+        // Deploy Uniswap Factory and Router
+        UniswapV2Factory uniswapFactory = new UniswapV2Factory(address(0));
 
-        // Deploy a exchange that will be used as the factory template
-        UniswapV1Exchange exchangeTemplate = deployer.deployExchange();
+        UniswapV2Router02 uniswapRouter = new UniswapV2Router02(
+            address(uniswapFactory),
+            address(_weth)
+        );
 
-        // Deploy factory, initializing it with the address of the template exchange
-        UniswapV1Factory factory = deployer.deployFactory();
-        factory.initializeFactory(address(exchangeTemplate));
+        // Create Uniswap pair against WETH and add liquidity
+        _token.approve(address(uniswapRouter), uniswapInitialTokenReserve);
+        uniswapRouter.addLiquidityETH{value: uniswapInitialWethReserve}(
+            address(_token),
+            uniswapInitialTokenReserve, // amountTokenDesired
+            0, // amountTokenMin
+            0, // amountETHMin
+            address(this),
+            block.timestamp * 2 days
+        );
 
-        // Create a new exchange for the token, and retrieve the deployed exchange's address
-        exchange = UniswapV1Exchange(factory.createExchange(address(token)));
+        address uniswapExchange = uniswapFactory.getPair[address(_token)][
+            address(_weth)
+        ];
 
-        // Deploy the lending pool
-        pool = new PuppetPool(address(token), address(exchange));
-        token.transfer(address(pool), POOL_INITIAL_TOKEN_BALANCE);
-
-        // Add initial token and ETH liquidity to the pool
-        // There’s a DVT market opened in an old Uniswap v1 exchange, currently with 10 ETH and 10 DVT in liquidity.
-        token.approve(address(exchange), UNISWAP_INITIAL_TOKEN_RESERVE);
-
-        exchange.addLiquidity{value: UNISWAP_INITIAL_ETH_RESERVE}(
-            0, // min_liquidity
-            UNISWAP_INITIAL_TOKEN_RESERVE,
-            block.timestamp + 2 days // deadline
+        PuppetV2Pool pool = new PuppetV2Pool(
+            address(_weth),
+            address(_token),
+            address(_uniswapPair),
+            address(uniswapFactory)
         );
     }
 
