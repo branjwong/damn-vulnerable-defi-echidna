@@ -5,10 +5,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     # For Makefiles
     make \
     # For git push/pull
+    gnupg2 \
     openssh-server \
+    pass \
     # For github linker
-    xsel
+    xsel \
+    # For in-terminal text editing
+    vim
 
 USER ethsec
 ENV SHELL /bin/bash
-
