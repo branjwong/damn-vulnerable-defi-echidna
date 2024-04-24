@@ -61,3 +61,9 @@
 [submodule "dvd9/uniswap/lib/v2-periphery"]
 	path = dvd9/uniswap/lib/v2-periphery
 	url = https://github.com/Uniswap/v2-periphery
+[submodule "dvd10/lib/forge-std"]
+	path = dvd10/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "dvd10/lib/openzeppelin-contracts"]
+	path = dvd10/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
