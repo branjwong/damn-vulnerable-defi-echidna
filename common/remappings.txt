@@ -4,4 +4,4 @@
 @uniswap/v2-periphery=lib/v2-periphery
 solmate=lib/solmate/src
 @gnosis.pm/safe-contracts=lib/safe-smart-account
-solady=lib/solady
+solady/src=lib/solady/src

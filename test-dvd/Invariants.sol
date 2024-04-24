@@ -1,9 +1,7 @@
 pragma solidity ^0.8.0;
 
-import "@common/uniswap/UniswapV1Exchange.sol";
 import "@common/DamnValuableToken.sol";
 
-import "../src/PuppetPool.sol";
 import "./Deployer.sol";
 
 /// @dev Run the template with
@@ -13,8 +11,6 @@ import "./Deployer.sol";
 ///      echidna test/Invariants.sol --contract Echidna --config test/echidna.config.yaml
 ///      ```
 contract Echidna {
-    using Address for address payable;
-
     // Determines how fast Echidna can find the solution
     enum TestingLevel {
         // < 200 calls: 1 sec
@@ -60,13 +56,6 @@ contract Echidna {
         _attack();
     }
 
-    function attackWithTokenValues(
-        uint256 tokenToEthAmount,
-        uint256 poolBorrowAmount
-    ) external onlyTestingLevel(TestingLevel.UnsolvedTokenValues) {
-        _attack();
-    }
-
     // ///////////////// //
     // PRIVATE FUNCTIONS //
     // ///////////////// //
@@ -94,12 +83,8 @@ contract Echidna {
     // INVARIANT PROPERTIES //
     // //////////////////// //
 
-    function echidna_cannot_empty_tokens_from_pool()
-        public
-        view
-        returns (bool)
-    {
-        return _token.balanceOf(address(_pool)) > 0;
+    function echidna_draft_invariant() public view returns (bool) {
+        return true;
     }
 
     // @audit-info if receive is missing, educated guess will fail
