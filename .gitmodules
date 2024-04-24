@@ -64,3 +64,9 @@
 [submodule "dvd10/lib/openzeppelin-contracts"]
 	path = dvd10/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "dvd10/repo"]
+	path = dvd10/repo
+	url = https://github.com/tinchoabbate/damn-vulnerable-defi
+[submodule "repo"]
+	path = repo
+	url = https://github.com/tinchoabbate/damn-vulnerable-defi
