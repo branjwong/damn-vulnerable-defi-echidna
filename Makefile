@@ -15,6 +15,7 @@ libs:
 	cp -r common dvd8
 	cp -r common dvd9
 	cp -r common dvd10
+	cp -r common dvd11
 
 	ln -sf ../common/remappings.txt dvd3/remappings.txt
 	ln -sf ../common/remappings.txt dvd5.ech8/remappings.txt
@@ -23,6 +24,7 @@ libs:
 	ln -sf ../common/remappings.txt dvd8/remappings.txt
 	ln -sf ../common/remappings.txt dvd9/remappings.txt
 	ln -sf ../common/remappings.txt dvd10/remappings.txt
+	ln -sf ../common/remappings.txt dvd11/remappings.txt
 
 fixperm:
 	sudo chmod -R a+rwX .

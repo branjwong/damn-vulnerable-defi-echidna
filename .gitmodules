@@ -70,3 +70,15 @@
 [submodule "repo"]
 	path = repo
 	url = https://github.com/tinchoabbate/damn-vulnerable-defi
+[submodule "dvd11/lib/forge-std"]
+	path = dvd11/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "dvd11/lib/safe-smart-account"]
+	path = dvd11/lib/safe-smart-account
+	url = https://github.com/safe-global/safe-smart-account
+[submodule "dvd11/lib/openzeppelin-contracts"]
+	path = dvd11/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "dvd11/lib/solady"]
+	path = dvd11/lib/solady
+	url = https://github.com/vectorized/solady
