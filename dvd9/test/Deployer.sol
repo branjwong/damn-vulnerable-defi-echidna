@@ -1,8 +1,8 @@
 pragma solidity ^0.8.0;
 
 import {UniswapV2Deployer} from "@common/uniswap/v2/UniswapV2Deployer.sol";
-import {IUniswapV2Factory} from "@common/uniswap/v2/IUniswapV2Factory.sol";
-import {IUniswapV2Router02} from "@common/uniswap/v2/IUniswapV2Router02.sol";
+import {IUniswapV2Factory} from "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
+import {IUniswapV2Router02} from "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import {WETH} from "solmate/tokens/WETH.sol";
 import {DamnValuableToken} from "@common/DamnValuableToken.sol";
 import {PuppetV2Pool} from "../src/PuppetV2Pool.sol";

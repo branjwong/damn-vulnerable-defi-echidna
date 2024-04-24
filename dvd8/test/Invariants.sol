@@ -71,9 +71,9 @@ contract Echidna {
         _;
     }
 
-    // //////////////
-    // EDUCATED GUESS
-    // //////////////
+    // //////////////// //
+    // EDUCATED GUESSES //
+    // //////////////// //
 
     function attack() public onlyTestingLevel(TestingLevel.Solved) {
         _attack(
@@ -86,15 +86,18 @@ contract Echidna {
         );
     }
 
-    // ////////////
-    // Unfunctional
-    // ////////////
-
     function attackWithAddresses(
         address attacker,
         address exchange
     ) external onlyTestingLevel(TestingLevel.UnsolvedAddresses) {
-        _unfunctionalAttack(attacker, exchange);
+        _attack(
+            attacker,
+            exchange,
+            ATTACKER_TOKENS,
+            block.timestamp + 1 hours,
+            _initialPoolTokenBalance,
+            block.timestamp + 1 hours
+        );
     }
 
     function attackWithTokenValues(
@@ -111,20 +114,9 @@ contract Echidna {
         );
     }
 
-    function _unfunctionalAttack(address attacker, address exchange) internal {
-        _attack(
-            attacker,
-            exchange,
-            ATTACKER_TOKENS,
-            block.timestamp + 1 hours,
-            _initialPoolTokenBalance,
-            block.timestamp + 1 hours
-        );
-    }
-
-    // /////////////////
-    // PRIVATE FUNCTIONS
-    // /////////////////
+    // ///////////////// //
+    // PRIVATE FUNCTIONS //
+    // ///////////////// //
 
     function _attack(
         address attacker,
@@ -161,9 +153,9 @@ contract Echidna {
         return true;
     }
 
-    // ///////////////////
-    // UNORDERED FUNCTIONS
-    // ///////////////////
+    // /////////////////// //
+    // UNORDERED FUNCTIONS //
+    // /////////////////// //
 
     function approve(
         uint256 amount
@@ -197,9 +189,10 @@ contract Echidna {
         );
     }
 
-    // ////////////////////
-    // INVARIANT PROPERTIES
-    // ////////////////////
+    // //////////////////// //
+    // INVARIANT PROPERTIES //
+    // //////////////////// //
+
     function echidna_cannot_empty_tokens_from_pool()
         public
         view

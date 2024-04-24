@@ -21,20 +21,20 @@ npm install
 
 # Echidna Exercise to DVD Mapping
 
-| Echidna | Damn Vulnerable # | Name           |
-| ------- | ----------------- | -------------- |
-| 5       | 2                 | Naive receiver |
-| 6       | 1                 | Unstoppable    |
-| 7       | 4                 | Side Entrance  |
-| 8       | 5                 | The Rewarder   |
-|         | 3                 | Truster        |
-|         | 6                 | Selfie         |
-|         | 7                 | Compromised    |
-|         | 8                 | Puppet         |
-|         | 9                 | Puppet V2      |
-|         | 10                | Free Rider     |
-|         | 11                | Backdoor       |
-|         | 12                | Climber        |
-|         | 13                | Wallet Mining  |
-|         | 14                | Puppet V3      |
-|         | 15                | ABI Smuggling  |
+| Echidna | Damn Vulnerable # | Name           | Uniswap |
+| ------- | ----------------- | -------------- | ------- |
+| 5       | 2                 | Naive receiver |         |
+| 6       | 1                 | Unstoppable    |         |
+| 7       | 4                 | Side Entrance  |         |
+| 8       | 5                 | The Rewarder   |         |
+|         | 3                 | Truster        |         |
+|         | 6                 | Selfie         |         |
+|         | 7                 | Compromised    |         |
+|         | 8                 | Puppet         | x       |
+|         | 9                 | Puppet V2      | x       |
+|         | 10                | Free Rider     | x       |
+|         | 11                | Backdoor       |         |
+|         | 12                | Climber        |         |
+|         | 13                | Wallet Mining  |         |
+|         | 14                | Puppet V3      | x       |
+|         | 15                | ABI Smuggling  |         |

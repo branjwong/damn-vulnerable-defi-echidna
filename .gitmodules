@@ -13,9 +13,6 @@
 [submodule "dvd3/lib/forge-std"]
 	path = dvd3/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
-[submodule "repo"]
-	path = repo
-	url = https://github.com/tinchoabbate/damn-vulnerable-defi.git
 [submodule "dvd3/lib/openzeppelin-contracts"]
 	path = dvd3/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
@@ -61,3 +58,27 @@
 [submodule "dvd9/uniswap/lib/v2-periphery"]
 	path = dvd9/uniswap/lib/v2-periphery
 	url = https://github.com/Uniswap/v2-periphery
+[submodule "dvd10/lib/forge-std"]
+	path = dvd10/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "dvd10/lib/openzeppelin-contracts"]
+	path = dvd10/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "dvd10/repo"]
+	path = dvd10/repo
+	url = https://github.com/tinchoabbate/damn-vulnerable-defi
+[submodule "repo"]
+	path = repo
+	url = https://github.com/tinchoabbate/damn-vulnerable-defi
+[submodule "dvd11/lib/forge-std"]
+	path = dvd11/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "dvd11/lib/safe-smart-account"]
+	path = dvd11/lib/safe-smart-account
+	url = https://github.com/safe-global/safe-smart-account
+[submodule "dvd11/lib/openzeppelin-contracts"]
+	path = dvd11/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "dvd11/lib/solady"]
+	path = dvd11/lib/solady
+	url = https://github.com/vectorized/solady
