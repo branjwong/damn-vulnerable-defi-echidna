@@ -1,7 +1,8 @@
-pragma solidity 0.5.16;
+pragma solidity ^0.8.0;
 
-import {UniswapV2Factory} from "@uniswap/v2-core/contracts/UniswapV2Factory.sol";
-import {UniswapV2Router02} from "@uniswap/v2-periphery/contracts/UniswapV2Router02.sol";
+import {UniswapV2Deployer} from "@common/uniswap/v2/UniswapV2Deployer.sol";
+import {IUniswapV2Factory} from "@common/uniswap/v2/IUniswapV2Factory.sol";
+import {IUniswapV2Router02} from "@common/uniswap/v2/IUniswapV2Router02.sol";
 import {WETH} from "solmate/tokens/WETH.sol";
 import {DamnValuableToken} from "@common/DamnValuableToken.sol";
 import {PuppetV2Pool} from "../src/PuppetV2Pool.sol";
@@ -23,9 +24,9 @@ contract Deployer {
         Weth weth = new WETH();
 
         // Deploy Uniswap Factory and Router
-        UniswapV2Factory uniswapFactory = new UniswapV2Factory(address(0));
+        IUniswapV2Factory uniswapFactory = new IUniswapV2Factory(address(0));
 
-        UniswapV2Router02 uniswapRouter = new UniswapV2Router02(
+        IUniswapV2Router02 uniswapRouter = new IUniswapV2Router02(
             address(uniswapFactory),
             address(_weth)
         );

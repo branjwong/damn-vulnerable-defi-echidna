@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.6;
+pragma solidity ^0.8.0;
 
 import {Test, console} from "forge-std/Test.sol";
+import {IUniswapV2Factory} from "@common/uniswap/v2/IUniswapV2Factory.sol";
+import {IUniswapV2Router02} from "@common/uniswap/v2/IUniswapV2Router02.sol";
 
 import {WETH} from "solmate/tokens/WETH.sol";
 import {DamnValuableToken} from "@common/DamnValuableToken.sol";

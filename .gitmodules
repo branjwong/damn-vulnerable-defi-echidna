@@ -52,3 +52,12 @@
 [submodule "dvd9/lib/solmate"]
 	path = dvd9/lib/solmate
 	url = https://github.com/transmissions11/solmate
+[submodule "dvd9/uniswap/lib/forge-std"]
+	path = dvd9/uniswap/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "dvd9/uniswap/lib/v2-core"]
+	path = dvd9/uniswap/lib/v2-core
+	url = https://github.com/Uniswap/v2-core
+[submodule "dvd9/uniswap/lib/v2-periphery"]
+	path = dvd9/uniswap/lib/v2-periphery
+	url = https://github.com/Uniswap/v2-periphery
