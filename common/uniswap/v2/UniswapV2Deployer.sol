@@ -1,7 +1,7 @@
 pragma solidity ^0.8.0;
 
-import "@common/uniswap/v2/IUniswapV2Factory.sol";
-import "@common/uniswap/v2/IUniswapV2Router02.sol";
+import {IUniswapV2Factory} from "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
+import {IUniswapV2Router02} from "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 // https://ethereum.stackexchange.com/questions/78738/passing-constructor-arguments-to-the-create-assembly-instruction-in-solidity
 
