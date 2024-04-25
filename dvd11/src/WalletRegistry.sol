@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol";
 import "@gnosis.pm/safe-contracts/contracts/proxies/IProxyCreationCallback.sol";
 
+// @audit Can we use illegitimate Gnosis Safe wallets?
 /**
  * @title WalletRegistry
  * @notice A registry for Gnosis Safe wallets.
@@ -23,6 +24,9 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
     address public immutable walletFactory;
     IERC20 public immutable token;
 
+    // @audit what priviledges does a beneficiary have? how does it get them?
+    // @audit-info beneficiaries are sent DVT for deploying and registering a wallet
+    // @audit can a wallet be deployed/registered multiple times? exploit?
     mapping(address => bool) public beneficiaries;
 
     // owner => wallet
@@ -49,7 +53,7 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
         walletFactory = walletFactoryAddress;
         token = IERC20(tokenAddress);
 
-        for (uint256 i = 0; i < initialBeneficiaries.length;) {
+        for (uint256 i = 0; i < initialBeneficiaries.length; ) {
             unchecked {
                 beneficiaries[initialBeneficiaries[i]] = true;
                 ++i;
@@ -62,19 +66,24 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
     }
 
     /**
-     * @notice Function executed when user creates a Gnosis Safe wallet via GnosisSafeProxyFactory::createProxyWithCallback
+     * @notice Function executed when user creates a Gnosis Safe wallet via     createProxyWithCallback
      *          setting the registry's address as the callback.
      */
-    function proxyCreated(GnosisSafeProxy proxy, address singleton, bytes calldata initializer, uint256)
-        external
-        override
-    {
-        if (token.balanceOf(address(this)) < PAYMENT_AMOUNT) { // fail early
+    function proxyCreated(
+        GnosisSafeProxy proxy,
+        address singleton,
+        bytes calldata initializer,
+        uint256
+    ) external override {
+        if (token.balanceOf(address(this)) < PAYMENT_AMOUNT) {
+            // fail early
             revert NotEnoughFunds();
         }
 
         address payable walletAddress = payable(proxy);
 
+        // @audit can we change the address of `walletFactory`?
+        // @audit can we get the wallet factory to call this illegitmately?
         // Ensure correct factory and master copy
         if (msg.sender != walletFactory) {
             revert CallerNotFactory();
@@ -84,6 +93,7 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
             revert FakeMasterCopy();
         }
 
+        // @audit can we get an arbitrary contract to call this illegitmately, and set the `initializer` to something to GnosisSafe::setup?
         // Ensure initial calldata was a call to `GnosisSafe::setup`
         if (bytes4(initializer[:4]) != GnosisSafe.setup.selector) {
             revert InvalidInitialization();
@@ -109,10 +119,12 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
             revert OwnerIsNotABeneficiary();
         }
 
+        // @audit wtf is a fallback manager?
         address fallbackManager = _getFallbackManager(walletAddress);
         if (fallbackManager != address(0))
             revert InvalidFallbackManager(fallbackManager);
 
+        // @audit-info CEI adhered to
         // Remove owner as beneficiary
         beneficiaries[walletOwner] = false;
 
@@ -120,16 +132,23 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
         wallets[walletOwner] = walletAddress;
 
         // Pay tokens to the newly created wallet
-        SafeTransferLib.safeTransfer(address(token), walletAddress, PAYMENT_AMOUNT);
+        SafeTransferLib.safeTransfer(
+            address(token),
+            walletAddress,
+            PAYMENT_AMOUNT
+        );
     }
 
-    function _getFallbackManager(address payable wallet) private view returns (address) {
-        return abi.decode(
-            GnosisSafe(wallet).getStorageAt(
-                uint256(keccak256("fallback_manager.handler.address")),
-                0x20
-            ),
-            (address)
-        );
+    function _getFallbackManager(
+        address payable wallet
+    ) private view returns (address) {
+        return
+            abi.decode(
+                GnosisSafe(wallet).getStorageAt(
+                    uint256(keccak256("fallback_manager.handler.address")),
+                    0x20
+                ),
+                (address)
+            );
     }
 }

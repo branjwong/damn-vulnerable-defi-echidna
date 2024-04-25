@@ -2,6 +2,7 @@ pragma solidity ^0.8.0;
 
 import "@common/DamnValuableToken.sol";
 
+import "../src/WalletRegistry.sol";
 import "./Deployer.sol";
 
 /// @dev Run the template with
@@ -27,10 +28,11 @@ contract Echidna {
     Deployer _deployer;
 
     DamnValuableToken _token;
+    WalletRegistry _registry;
 
     constructor() payable {
         _deployer = new Deployer();
-        (_token) = _deployer.deploy();
+        (_token, _registry) = _deployer.deploy(new address[](0));
     }
 
     modifier onlyTestingLevel(TestingLevel testingLevel) {
