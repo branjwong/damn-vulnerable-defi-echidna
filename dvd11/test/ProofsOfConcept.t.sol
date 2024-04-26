@@ -20,6 +20,7 @@ contract ProofsOfConcept is Test {
     Deployer _deployer;
 
     DamnValuableToken _token;
+    GnosisSafeProxyFactory _walletFactory;
     WalletRegistry _walletRegistry;
 
     address _alice = makeAddr("alice");
@@ -36,17 +37,26 @@ contract ProofsOfConcept is Test {
         _users.push(_attacker);
 
         _deployer = new Deployer();
-        (_token, _walletRegistry) = _deployer.deploy(_users);
+        (_token, _walletFactory, _walletRegistry) = _deployer.deploy(_users);
     }
 
+    //
     function testHappyPath() external {
         vm.deal(_user, 1000 ether);
         vm.startPrank(_user);
 
         // create a wallet in Gnosis and register it in the registry using GnosisSafeProxyFactory::createProxyWithCallback
+        _walletFactory.createProxyWithCallback(
+            address(_walletRegistry),
+            hex"01", // salt
+            2, // saltNonce
+            address(this)
+        );
+
         // observe DVT balance
     }
 
+    // Try Echidna First
     function testAttack() external {
         vm.deal(_attacker, ATTACKER_ETH);
         deal(address(_token), _attacker, ATTACKER_TOKENS);

@@ -45,6 +45,7 @@ contract Echidna {
     // EDUCATED GUESSES //
     // //////////////// //
 
+    // Try POC happy path first
     function attack() public onlyTestingLevel(TestingLevel.Solved) {
         _attack();
     }

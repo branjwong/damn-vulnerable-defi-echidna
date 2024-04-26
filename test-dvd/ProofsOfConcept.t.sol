@@ -29,6 +29,7 @@ contract ProofsOfConcept is Test {
         vm.startPrank(_user);
     }
 
+    // Try Echidna First
     function testAttack() external {
         vm.deal(_attacker, ATTACKER_ETH);
         deal(address(_token), _attacker, ATTACKER_TOKENS);

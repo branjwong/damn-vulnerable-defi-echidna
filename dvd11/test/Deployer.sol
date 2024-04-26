@@ -13,10 +13,14 @@ contract Deployer {
     )
         external
         payable
-        returns (DamnValuableToken token, WalletRegistry registry)
+        returns (
+            DamnValuableToken token,
+            GnosisSafeProxyFactory walletFactory,
+            WalletRegistry registry
+        )
     {
         GnosisSafe masterCopy = new GnosisSafe();
-        GnosisSafeProxyFactory walletFactory = new GnosisSafeProxyFactory();
+        walletFactory = new GnosisSafeProxyFactory();
         token = new DamnValuableToken();
         registry = new WalletRegistry(
             address(masterCopy),
