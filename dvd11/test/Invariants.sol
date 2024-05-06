@@ -28,11 +28,14 @@ contract Echidna {
     Deployer _deployer;
 
     DamnValuableToken _token;
+    GnosisSafeProxyFactory _walletFactory;
     WalletRegistry _registry;
 
     constructor() payable {
         _deployer = new Deployer();
-        (_token, _registry) = _deployer.deploy(new address[](0));
+        (_token, _walletFactory, _registry) = _deployer.deploy(
+            new address[](0)
+        );
     }
 
     modifier onlyTestingLevel(TestingLevel testingLevel) {

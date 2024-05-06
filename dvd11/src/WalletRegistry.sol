@@ -89,6 +89,7 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
             revert CallerNotFactory();
         }
 
+        // @audit wtf is masterCopy
         if (singleton != masterCopy) {
             revert FakeMasterCopy();
         }
