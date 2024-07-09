@@ -23,19 +23,23 @@ contract Echidna {
 
     error OnlyTestingLevel(TestingLevel supported);
 
-    TestingLevel private _testingLevel = TestingLevel.UnorderedFunctions;
+    TestingLevel private _testingLevel = TestingLevel.NoHarness;
 
     Deployer _deployer;
 
     DamnValuableToken _token;
     GnosisSafeProxyFactory _walletFactory;
     WalletRegistry _registry;
+    address[] _users = new address[](4);
 
     constructor() payable {
+        _users[0] = address(1);
+        _users[1] = address(2);
+        _users[2] = address(3);
+        _users[3] = address(4);
+
         _deployer = new Deployer();
-        (_token, _walletFactory, _registry) = _deployer.deploy(
-            new address[](0)
-        );
+        (_token, _walletFactory, _registry) = _deployer.deploy(_users);
     }
 
     modifier onlyTestingLevel(TestingLevel testingLevel) {
@@ -89,8 +93,10 @@ contract Echidna {
     // INVARIANT PROPERTIES //
     // //////////////////// //
 
-    function echidna_draft_invariant() public view returns (bool) {
-        return true;
+    function echidna_sender_cannot_steal_funds() public view returns (bool) {
+        return
+            _token.balanceOf(msg.sender) <
+            _deployer.AMOUNT_TOKENS_DISTRIBUTED();
     }
 
     // @audit-info if receive is missing, educated guess will fail

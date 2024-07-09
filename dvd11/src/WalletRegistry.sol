@@ -89,12 +89,14 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
             revert CallerNotFactory();
         }
 
-        // @audit wtf is masterCopy
+        // @audit-info masterCopy maintains that the wallet is a Gnosis Safe wallet
         if (singleton != masterCopy) {
             revert FakeMasterCopy();
         }
 
         // @audit can we get an arbitrary contract to call this illegitmately, and set the `initializer` to something to GnosisSafe::setup?
+        // @audit pretty sure we can create our own method called
+        // setup(address[] calldata _owners,uint256 _threshold,address to,bytes calldata data,address fallbackHandler,address paymentToken,uint256 payment,address payable paymentReceiver)
         // Ensure initial calldata was a call to `GnosisSafe::setup`
         if (bytes4(initializer[:4]) != GnosisSafe.setup.selector) {
             revert InvalidInitialization();
@@ -120,11 +122,13 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
             revert OwnerIsNotABeneficiary();
         }
 
-        // @audit wtf is a fallback manager?
+        // @audit-info doesn't allow for fallback manager
+        // @audit maybe?? should double check that this works properly
         address fallbackManager = _getFallbackManager(walletAddress);
         if (fallbackManager != address(0))
             revert InvalidFallbackManager(fallbackManager);
 
+        // @audit so that wallet owners can't double dip on DVT
         // @audit-info CEI adhered to
         // Remove owner as beneficiary
         beneficiaries[walletOwner] = false;

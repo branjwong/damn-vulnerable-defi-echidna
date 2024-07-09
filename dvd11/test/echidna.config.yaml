@@ -2,7 +2,7 @@
 # OVERRIDES
 # #########
 
-# corpusDir: "corpus"
+corpusDir: "corpus"
 
 deployer: '0x10000'
 sender: ['0x30000'] # to have a different sender of TXs then deployer
@@ -10,8 +10,7 @@ sender: ['0x30000'] # to have a different sender of TXs then deployer
 balanceContract: 35000000000000000000
 
 testLimit: 10000000
-
-# allContracts: true
+allContracts: true
 
 # solcLibs: ["../common"]
 # solcArgs: "--allow-paths ../common"
